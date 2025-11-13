@@ -26,10 +26,11 @@ abstract class ResourceFieldDestroyController extends Controller
     {
         $route = call_user_func($request->getRouteResolver());
         $route->setParameter('resource', $this->resourceName);
-        $request->findResourceOrFail()->authorizeToUpdate($request);
+        $resource = $request->findResourceOrFail();
+        $resource->authorizeToUpdate($request);
 
-        $resource = $request->newResource();
-        $field = $resource->updateFields($request)->findFieldByAttribute($request->field);
+        $fields = $resource->updateFields($request);
+        $field = $fields->findFieldByAttribute($request->field);
 
         if (!($field instanceof File)) {
             abort(404);
