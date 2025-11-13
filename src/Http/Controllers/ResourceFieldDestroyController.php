@@ -31,25 +31,24 @@ abstract class ResourceFieldDestroyController extends Controller
         $resource->authorizeToUpdate($request);
 
         $fields = $resource->updateFields($request);
-
         $field = null;
         foreach ($fields as $f) {
             $fieldAttribute = $f->attribute;
 
-            // Handle normal Image/File fields
+            // Handle normal Field
             if(isset($fieldAttribute) && $fieldAttribute == $request->field) {
                 $field = $f;
                 break;
             }
 
-            // Handle Image/File fields inside Flexible
+            // Handle Flexible Field
             if($f instanceof Flexible) {
                 [$key, $attribute] = explode('__', $request->field);
                 foreach ($f->value as $index => $value) {
                     if($key == $value['key']) {
-                        foreach ($value['attributes'] as $attributeIndex => $attributeValue) {
+                        foreach ($value['attributes'] as $attributeValue) {
                             if($attributeValue['attribute'] == $attribute) {
-                                $field = File::make('Image', "$fieldAttribute->$attributeIndex.attributes.$attribute");
+                                $field = File::make('Image', "$fieldAttribute->$index.attributes.$attribute");
                                 $field->disk('gcs');
                                 $field->value = $attributeValue['value'];
                                 break;
