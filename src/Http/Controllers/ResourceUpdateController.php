@@ -60,7 +60,7 @@ abstract class ResourceUpdateController extends Controller
     {
         $date = $template->getDate('updated_at');
         return $request->input('_retrieved_at') && $date && $date->gt(
-            Carbon::createFromTimestamp($request->input('_retrieved_at'))
+            Carbon::createFromTimestamp($request->input('_retrieved_at') + 1 ) // plus one to fix stupid desync issue with image field delete
         );
     }
 }
